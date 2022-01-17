@@ -1,0 +1,150 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>调度器 | My New Hugo Site</title>
+<meta name=viewport content="width=device-width,minimum-scale=1">
+<meta name=description content="调度器 调度器启动 func schedinit() { sched.maxmcount=10000 procs := ncpu if n, ok := atoi32(gogetenv(&#34;GOMAXPROCS&#34;)); ok && n > 0 { procs = n } if procresize(procs) != nil { throw(&#34;unkonwn runable goroutine during bootstrap&#34;) } } 通过上面的伪代码可以看到, 调度器在启动时做了以下操作:
+ 设置线程(m)的最大数量为10000 默认处理器p的数量为cpu数量, 当环境变量GOMAXPROCS存在且合法时, 将procs设置为用户自定义的值 调用procresize更新程序中处理器(p)的数量, 失败则退出程序, 此步骤又包括下面几项:  将线程m0和处理器p0绑定 维护全局变量allp, 使之和需求的procs一致 将除了allp0以外的处理器(p)全部设置为_Pidle并加入全局空闲队列    创建Goroutine 当使用go关键字创建一个新的goroutine来执行任务时, 编译器会将关键字转换为runtime.newproc调用.
+func newproc(siz int32, fn *funcval){}
+调度循环 runtime.schedule函数会从下面几处查找待执行的goroutine:
+ 为了保证公平, 当全局运行队列中有待执行的goroutine时, 通过schedtick保证有一定概率会从全局队列中查找对应的goroutine(因为处理器P的runq size为256, 超过上限的g会被放入全局运行队列) 从处理器本地的队列中查找待执行的goroutine.">
+<meta name=generator content="Hugo 0.92.0">
+<meta name=ROBOTS content="NOINDEX, NOFOLLOW">
+<link rel=stylesheet href=/ananke/css/main.min.css>
+<meta property="og:title" content="调度器">
+<meta property="og:description" content="调度器 调度器启动 func schedinit() { sched.maxmcount=10000 procs := ncpu if n, ok := atoi32(gogetenv(&#34;GOMAXPROCS&#34;)); ok && n > 0 { procs = n } if procresize(procs) != nil { throw(&#34;unkonwn runable goroutine during bootstrap&#34;) } } 通过上面的伪代码可以看到, 调度器在启动时做了以下操作:
+ 设置线程(m)的最大数量为10000 默认处理器p的数量为cpu数量, 当环境变量GOMAXPROCS存在且合法时, 将procs设置为用户自定义的值 调用procresize更新程序中处理器(p)的数量, 失败则退出程序, 此步骤又包括下面几项:  将线程m0和处理器p0绑定 维护全局变量allp, 使之和需求的procs一致 将除了allp0以外的处理器(p)全部设置为_Pidle并加入全局空闲队列    创建Goroutine 当使用go关键字创建一个新的goroutine来执行任务时, 编译器会将关键字转换为runtime.newproc调用.
+func newproc(siz int32, fn *funcval){}
+调度循环 runtime.schedule函数会从下面几处查找待执行的goroutine:
+ 为了保证公平, 当全局运行队列中有待执行的goroutine时, 通过schedtick保证有一定概率会从全局队列中查找对应的goroutine(因为处理器P的runq size为256, 超过上限的g会被放入全局运行队列) 从处理器本地的队列中查找待执行的goroutine.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="http://example.org/facts_about_go/%E8%B0%83%E5%BA%A6%E5%99%A8/"><meta property="article:section" content="facts_about_go">
+<meta property="article:published_time" content="2022-01-17T08:47:11+01:00">
+<meta property="article:modified_time" content="2022-01-17T08:47:11+01:00">
+<meta itemprop=name content="调度器">
+<meta itemprop=description content="调度器 调度器启动 func schedinit() { sched.maxmcount=10000 procs := ncpu if n, ok := atoi32(gogetenv(&#34;GOMAXPROCS&#34;)); ok && n > 0 { procs = n } if procresize(procs) != nil { throw(&#34;unkonwn runable goroutine during bootstrap&#34;) } } 通过上面的伪代码可以看到, 调度器在启动时做了以下操作:
+ 设置线程(m)的最大数量为10000 默认处理器p的数量为cpu数量, 当环境变量GOMAXPROCS存在且合法时, 将procs设置为用户自定义的值 调用procresize更新程序中处理器(p)的数量, 失败则退出程序, 此步骤又包括下面几项:  将线程m0和处理器p0绑定 维护全局变量allp, 使之和需求的procs一致 将除了allp0以外的处理器(p)全部设置为_Pidle并加入全局空闲队列    创建Goroutine 当使用go关键字创建一个新的goroutine来执行任务时, 编译器会将关键字转换为runtime.newproc调用.
+func newproc(siz int32, fn *funcval){}
+调度循环 runtime.schedule函数会从下面几处查找待执行的goroutine:
+ 为了保证公平, 当全局运行队列中有待执行的goroutine时, 通过schedtick保证有一定概率会从全局队列中查找对应的goroutine(因为处理器P的runq size为256, 超过上限的g会被放入全局运行队列) 从处理器本地的队列中查找待执行的goroutine."><meta itemprop=datePublished content="2022-01-17T08:47:11+01:00">
+<meta itemprop=dateModified content="2022-01-17T08:47:11+01:00">
+<meta itemprop=wordCount content="120">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content="调度器">
+<meta name=twitter:description content="调度器 调度器启动 func schedinit() { sched.maxmcount=10000 procs := ncpu if n, ok := atoi32(gogetenv(&#34;GOMAXPROCS&#34;)); ok && n > 0 { procs = n } if procresize(procs) != nil { throw(&#34;unkonwn runable goroutine during bootstrap&#34;) } } 通过上面的伪代码可以看到, 调度器在启动时做了以下操作:
+ 设置线程(m)的最大数量为10000 默认处理器p的数量为cpu数量, 当环境变量GOMAXPROCS存在且合法时, 将procs设置为用户自定义的值 调用procresize更新程序中处理器(p)的数量, 失败则退出程序, 此步骤又包括下面几项:  将线程m0和处理器p0绑定 维护全局变量allp, 使之和需求的procs一致 将除了allp0以外的处理器(p)全部设置为_Pidle并加入全局空闲队列    创建Goroutine 当使用go关键字创建一个新的goroutine来执行任务时, 编译器会将关键字转换为runtime.newproc调用.
+func newproc(siz int32, fn *funcval){}
+调度循环 runtime.schedule函数会从下面几处查找待执行的goroutine:
+ 为了保证公平, 当全局运行队列中有待执行的goroutine时, 通过schedtick保证有一定概率会从全局队列中查找对应的goroutine(因为处理器P的runq size为256, 超过上限的g会被放入全局运行队列) 从处理器本地的队列中查找待执行的goroutine.">
+</head>
+<body class="ma0 avenir bg-near-white">
+<header>
+<div class=bg-black>
+<nav class="pv3 ph3 ph4-ns" role=navigation>
+<div class="flex-l justify-between items-center center">
+<a href=/ class="f3 fw2 hover-white no-underline white-90 dib">
+My New Hugo Site
+</a>
+<div class="flex-l items-center">
+<div class=ananke-socials>
+</div>
+</div>
+</div>
+</nav>
+</div>
+</header>
+<main class=pb7 role=main>
+<article class="flex-l flex-wrap justify-between mw8 center ph3">
+<header class="mt4 w-100">
+<aside class="instapaper_ignoref b helvetica tracked">
+FACTS_ABOUT_GOES
+</aside>
+<div id=sharing class="mt3 ananke-socials">
+</div>
+<h1 class="f1 athelas mt3 mb1">调度器</h1>
+<time class="f6 mv4 dib tracked" datetime=2022-01-17T08:47:11+01:00>January 17, 2022</time>
+</header>
+<div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><h1 id=调度器>调度器</h1>
+<h2 id=调度器启动>调度器启动</h2>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>schedinit</span>() {
+	<span style=color:#a6e22e>sched</span>.<span style=color:#a6e22e>maxmcount</span>=<span style=color:#ae81ff>10000</span>
+	<span style=color:#a6e22e>procs</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>ncpu</span>
+	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>n</span>, <span style=color:#a6e22e>ok</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>atoi32</span>(<span style=color:#a6e22e>gogetenv</span>(<span style=color:#e6db74>&#34;GOMAXPROCS&#34;</span>)); <span style=color:#a6e22e>ok</span> <span style=color:#f92672>&amp;&amp;</span> <span style=color:#a6e22e>n</span> &gt; <span style=color:#ae81ff>0</span> {
+		<span style=color:#a6e22e>procs</span> = <span style=color:#a6e22e>n</span>
+	}
+	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>procresize</span>(<span style=color:#a6e22e>procs</span>) <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+		<span style=color:#a6e22e>throw</span>(<span style=color:#e6db74>&#34;unkonwn runable goroutine during bootstrap&#34;</span>)
+	}
+}
+</code></pre></div><p>通过上面的伪代码可以看到, 调度器在启动时做了以下操作:</p>
+<ol>
+<li>设置线程(m)的最大数量为10000</li>
+<li>默认处理器p的数量为cpu数量, 当环境变量<code>GOMAXPROCS</code>存在且合法时, 将procs设置为用户自定义的值</li>
+<li>调用procresize更新程序中处理器(p)的数量, 失败则退出程序, 此步骤又包括下面几项:
+<ol>
+<li>将线程m0和处理器p0绑定</li>
+<li>维护全局变量allp, 使之和需求的procs一致</li>
+<li>将除了allp<a href=%E5%8D%B3p0>0</a>以外的处理器(p)全部设置为_Pidle并加入全局空闲队列</li>
+</ol>
+</li>
+</ol>
+<h2 id=创建goroutine>创建Goroutine</h2>
+<p>当使用<code>go</code>关键字创建一个新的goroutine来执行任务时, 编译器会将关键字转换为runtime.newproc调用.</p>
+<p><code>func newproc(siz int32, fn *funcval){}</code></p>
+<h2 id=调度循环>调度循环</h2>
+<p><code>runtime.schedule</code>函数会从下面几处查找待执行的goroutine:</p>
+<ol>
+<li>为了保证公平, 当全局运行队列中有待执行的goroutine时, 通过<code>schedtick</code>保证有一定概率会从全局队列中查找对应的goroutine(因为处理器P的<code>runq size</code>为256, 超过上限的g会被放入全局运行队列)</li>
+<li>从处理器本地的队列中查找待执行的goroutine.</li>
+<li>如果前两种方法都没有找到goroutine, 则通过<code>runtime.findrunable</code>阻塞的查找goroutine.
+<ol>
+<li>从本地运行队列, 全局运行队列中查找.</li>
+<li>从网络轮询器中查找</li>
+<li>通过<code>runtime.runqsteal</code>尝试从其他随机的处理器中窃取等待运行的goroutine, 该函数还可能窃取处理器的计时器.</li>
+<li>总而言之, 该方法一定会返回一个可执行的goroutine, 否则就阻塞等待</li>
+</ol>
+</li>
+</ol>
+<h2 id=系统调用>系统调用</h2>
+<p>处于性能考虑, go中系统调用分为两种, 对于不需要运行时参与的系统调用, 会使用<code>syscall.RawSyscall</code>简化过程. 否则则会按以下过程执行:</p>
+<ol>
+<li>执行runtime.entersyscall和runtime.reentersyscall, 为系统调用做准备工作, 该过程将goroutine的状态更新为<code>_Gsyscall</code>并将goroutine的处理器和线程暂时分离, 并将处理器的状态更新为<code>_Psyscall</code>. 需要注意的是, 处理器和线程分离, 当前线程会陷入系统调用等待返回, 当锁被释放后, <strong>会有其他goroutine抢占处理器资源</strong>.</li>
+<li>等待系统调用返回</li>
+<li>执行runtime.exitsyscall为当前goroutine重新分配资源. 该函数分为两个分支:
+<ol>
+<li><code>runtime.exitsyscallfast</code>, 如果goroutine的原处理器处于<code>_Psyscall</code>状态, 会直接调用<code>wirep</code>将goroutine和处理器进行关联. 又如果调度器中存在空闲处理器, 则调用<code>runtime.acquirep</code>使用空闲处理器处理当前goroutine.</li>
+<li><code>runtime.exitsyscall0</code>, 当我们通过<code>runtime.pidleget</code>获取到空闲处理器时, 就在该处理器上执行goroutine. 否则将当前goroutine加入<strong>全局运行队列</strong>.</li>
+</ol>
+</li>
+</ol>
+<p>无论如何, exitsyscall之后都会调用<code>runtime.schedule</code></p>
+<p>*疑问:</p>
+<p>处理器处于_Psyscall时能否绑定其他空闲的线程M?(从上面流程看来是可以的)</p>
+<p>runtime.acquirep和runtime.pidleget的区别?</p>
+<h2 id=线程管理>线程管理</h2>
+<p>运行时提供了<code>runtime.LockOSThread</code>和<code>runtime.UnlockOSThread</code>让我们能绑定goroutine和线程完成一些比较特殊的操作. (*goroutine绑定cpu? 但不能指定绑定哪个cpu)</p>
+<p><strong>线程生命周期</strong></p>
+<p>运行时会通过<code>runtime.startm</code>来启动线程执行处理器P, 如果该函数没能在空闲列表中获取线程M, 则会调用<code>runtime.newm</code>创建新的线程, 创建线程需要使用<code>runtime.newosproc</code>, 该函数在Linux平台上会<strong>通过系统调用clone创建新的操作系统线程</strong>.</p>
+<p><strong>通过系统调用clone创建的线程</strong>会在线程主动调用exit或传入的函数<code>runtime.mstart</code>返回时主动退出. <code>runtime.mstart</code>会执行调用<code>runtime.newm</code>时传入的匿名函数fn, 至此完成线程从创建到销毁的整个闭环.</p>
+<ul class=pa0>
+</ul>
+<div class="mt6 instapaper_ignoref">
+</div>
+</div>
+<aside class="w-30-l mt6-l">
+</aside>
+</article>
+</main>
+<footer class="bg-black bottom-0 w-100 pa3" role=contentinfo>
+<div class="flex justify-between">
+<a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href=http://example.org/>
+&copy; My New Hugo Site 2022
+</a>
+<div>
+<div class=ananke-socials>
+</div></div>
+</div>
+</footer>
+</body>
+</html>
